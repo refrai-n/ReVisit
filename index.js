@@ -2,19 +2,41 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     //initialize a bookmark if it already doesnt exist
-    chrome.storage.local.get('bookmarkExists', function (result) {
-        if (!result.bookmarkExists) {
+    // chrome.storage.local.get('bookmarkExists', function (result) {
+    //     if (!result.bookmarkExists) {
+    //         chrome.bookmarks.create({
+    //             parentId: '1', // bookmarks bar
+    //             title: 'ReVisit',
+    //             url: 'https://www.example.com/',
+    //         }, (bookmark) => {
+    //             console.log('Bookmark created with ID:', bookmark.id);
+    //             chrome.storage.local.set({ 'bookmarkId': bookmark.id });
+    //         });
+
+    //     }
+    // });
+
+    chrome.bookmarks.search({ title: 'ReVisit' }, (results) => {
+        let foundBookmark = false;
+        for (let i = 0; i < results.length; i++) {
+            if (results[i].title === "ReVisit") {
+                foundBookmark = true;
+                chrome.storage.local.set({ 'bookmarkId': results[i].id });
+                break;
+            }
+        }
+        if (!foundBookmark) {
             chrome.bookmarks.create({
-                parentId: '1', // bookmarks bar
+                parentId: '1',
                 title: 'ReVisit',
                 url: 'https://www.example.com/',
             }, (bookmark) => {
                 console.log('Bookmark created with ID:', bookmark.id);
                 chrome.storage.local.set({ 'bookmarkId': bookmark.id });
             });
-
         }
     });
+
 
 
     var inputField = document.getElementById('input-field');
@@ -23,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var visitBtn = document.getElementById('visit');
     var clearBtn = document.getElementById('clear');
 
-    const saveCurrentWebsite =()=> {
+    const saveCurrentWebsite = () => {
         var inputText = inputField.value;
         console.log('Input text:', inputText);
         if (inputText !== "") {
@@ -33,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    const visitCurrentWebsite =()=> {
+    const visitCurrentWebsite = () => {
         chrome.storage.local.get('web', function (result) {
             var current = result.web;
             if (current) {
@@ -48,11 +70,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
-    const clearLocal = ()=>{
+
+    const clearLocal = () => {
         chrome.storage.local.clear(() => {
             console.log('Extension data cleared.');
-          });
+        });
     }
 
 
