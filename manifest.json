@@ -7,8 +7,12 @@
     "permissions": [
         "history",
         "storage",
-        "tabs"
+        "bookmarks"
     ],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+      ],
     "action": {
         "default_popup": "index.html"
         
