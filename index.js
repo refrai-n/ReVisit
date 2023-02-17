@@ -2,32 +2,28 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     //initialize a bookmark if it already doesnt exist
-    if (chrome.storage.local.get('bookmarkExists', function (result) {
-        if (result.bookmarkExists) {
-            return false
-        }
-    })) {
-        chrome.bookmarks.create({
-            parentId: '1',
-            title: "ReVisit",
-            url: undefined
-        },
-            (bookmark) => {
+    chrome.storage.local.get('bookmarkExists', function (result) {
+        if (!result.bookmarkExists) {
+            chrome.bookmarks.create({
+                parentId: '1', // bookmarks bar
+                title: 'ReVisit',
+                url: 'https://www.example.com/',
+            }, (bookmark) => {
                 console.log('Bookmark created with ID:', bookmark.id);
-                chrome.bookmarks.update(bookmark.id, { pinned: true }, function () {
-                    console.log('Bookmark pinned!');
-                    chrome.storage.local.set({ 'bookmarkExists': true, 'bookmarkId': bookmark.id });
-                });
+                chrome.storage.local.set({ 'bookmarkId': bookmark.id });
             });
-    }
+
+        }
+    });
 
 
     var inputField = document.getElementById('input-field');
     var submitBtn = document.getElementById('submit-btn');
     var text = document.getElementById('text');
     var visitBtn = document.getElementById('visit');
+    var clearBtn = document.getElementById('clear');
 
-    function saveCurrentWebsite() {
+    const saveCurrentWebsite =()=> {
         var inputText = inputField.value;
         console.log('Input text:', inputText);
         if (inputText !== "") {
@@ -37,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function visitCurrentWebsite() {
+    const visitCurrentWebsite =()=> {
         chrome.storage.local.get('web', function (result) {
             var current = result.web;
             if (current) {
@@ -51,6 +47,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
         });
+    }
+    
+    const clearLocal = ()=>{
+        chrome.storage.local.clear(() => {
+            console.log('Extension data cleared.');
+          });
     }
 
 
@@ -66,10 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     visitBtn.addEventListener('click', visitCurrentWebsite);
 
+    clearBtn.addEventListener('click', clearLocal);
+
     chrome.runtime.onSuspend.addListener(function () {
         // Remove event listeners
         submitBtn.removeEventListener('click', saveCurrentWebsite);
         visitBtn.removeEventListener('click', visitCurrentWebsite);
+        clearBtn.removeEventListener('click', clearLocal);
     });
 
 
