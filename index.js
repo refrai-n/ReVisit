@@ -1,21 +1,7 @@
 //runs when popup is loaded
 document.addEventListener('DOMContentLoaded', function () {
 
-    //initialize a bookmark if it already doesnt exist
-    // chrome.storage.local.get('bookmarkExists', function (result) {
-    //     if (!result.bookmarkExists) {
-    //         chrome.bookmarks.create({
-    //             parentId: '1', // bookmarks bar
-    //             title: 'ReVisit',
-    //             url: 'https://www.example.com/',
-    //         }, (bookmark) => {
-    //             console.log('Bookmark created with ID:', bookmark.id);
-    //             chrome.storage.local.set({ 'bookmarkId': bookmark.id });
-    //         });
-
-    //     }
-    // });
-
+    //create a bookmark if it already doesnt exist
     chrome.bookmarks.search({ title: 'ReVisit' }, (results) => {
         let foundBookmark = false;
         for (let i = 0; i < results.length; i++) {
